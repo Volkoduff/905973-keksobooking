@@ -24,7 +24,7 @@ function getRandomMinMaxNum(min, max) {
   return randomMinMaxNum;
 }
 // Массив строк в произвольном порядке
-function getShuffleArray (arr) {
+function getShuffleArray(arr) {
   function compareRandom() {
     return Math.random() - 0.5;
   }
@@ -33,21 +33,22 @@ function getShuffleArray (arr) {
 }
 // Массив строк произвольной длинны
 function getRandomArrLength(arr) {
-  var featuresGeneric = getShuffleArray (arr);
-  var randomFinishIndex = getRandomMinMaxNum(1, arr.length)
+  var featuresGeneric = getShuffleArray(arr);
+  var randomFinishIndex = getRandomMinMaxNum(1, arr.length);
   featuresGeneric = arr.slice(1, randomFinishIndex);
   return featuresGeneric;
 }
 
 // Возвращает произвольную строку из массива
-var getRandomArr = function(array) {
+var getRandomArr = function (array) {
   var randomArr = Math.floor(Math.random() * array.length);
   return array[randomArr];
 };
 
 var mapArr = [];
+
 for (var i = 0; i <= AVATAR_NUM.length - 1; i++) {
-  var appartmentCheck = function(appartmentType) {
+  var appartmentCheck = function (appartmentType) {
     switch (appartmentType) {
       case ('flat'):
         var rusAppart = 'Квартира';
@@ -62,9 +63,10 @@ for (var i = 0; i <= AVATAR_NUM.length - 1; i++) {
         rusAppart = 'Дворец';
         break;
     }
-  }
+    return rusAppart;
+  };
 }
-for (var i = 0; i <= AVATAR_NUM.length - 1; i++) {
+for (var c = 0; c <= AVATAR_NUM.length - 1; c++) {
   var randomX = getRandomMinMaxNum(PIN_WIDTH, MAP_WIDTH - PIN_WIDTH);
   var randomY = getRandomMinMaxNum(MAP_HEIGH_MIN, MAP_HEIGH_MAX);
   var pinLocation = {
@@ -76,12 +78,12 @@ for (var i = 0; i <= AVATAR_NUM.length - 1; i++) {
     coordinates: pinLocation.x + ', ' + pinLocation.y,
     priceObj: getRandomMinMaxNum(1000, 1000000),
     rooms: getRandomMinMaxNum(1, 5),
-    titleObj: TITLE[i],
+    titleObj: TITLE[c],
     guests: getRandomMinMaxNum(2, 10),
     checkin: getRandomArr(CHECKIN),
     checkout: getRandomArr(CHECKOUT),
     features: getRandomArrLength(FEATURES),
-    photos: getShuffleArray (PHOTOS),
+    photos: getShuffleArray(PHOTOS),
     description: ''
   };
 
@@ -106,7 +108,7 @@ for (var i = 0; i <= AVATAR_NUM.length - 1; i++) {
   };
   mapArr.push(pinObj);
 }
-var renderPin = function(pin) {
+var renderPin = function (pin) {
   var pinElement = mapPinTemplate.cloneNode(true);
   pinElement.style = pin.location;
   pinElement.querySelector('img').src = pin.source;
@@ -119,7 +121,7 @@ for (i = 0; i < mapArr.length; i++) {
 }
 mapPin.appendChild(fragment);
 
-var renderCard = function(card) {
+var renderCard = function (card) {
   var cardElement = cardTemplate.cloneNode(true);
   cardElement.querySelector('.popup__title').textContent = card.titleArr;
   cardElement.querySelector('.popup__text--address').textContent = card.address;
