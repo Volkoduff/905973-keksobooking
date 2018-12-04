@@ -66,7 +66,7 @@ for (var i = 0; i <= AVATAR_NUM.length - 1; i++) {
     return rusAppart;
   };
 }
-for (var c = 0; c <= AVATAR_NUM.length - 1; c++) {
+for (i = 0; i <= AVATAR_NUM.length - 1; i++) {
   var randomX = getRandomMinMaxNum(PIN_WIDTH, MAP_WIDTH - PIN_WIDTH);
   var randomY = getRandomMinMaxNum(MAP_HEIGH_MIN, MAP_HEIGH_MAX);
   var pinLocation = {
@@ -78,7 +78,7 @@ for (var c = 0; c <= AVATAR_NUM.length - 1; c++) {
     coordinates: pinLocation.x + ', ' + pinLocation.y,
     priceObj: getRandomMinMaxNum(1000, 1000000),
     rooms: getRandomMinMaxNum(1, 5),
-    titleObj: TITLE[c],
+    titleObj: TITLE[i],
     guests: getRandomMinMaxNum(2, 10),
     checkin: getRandomArr(CHECKIN),
     checkout: getRandomArr(CHECKOUT),
