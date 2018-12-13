@@ -13,28 +13,44 @@ var CHECKOUT = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 var AVATAR_NUM = ['01', '02', '03', '04', '05', '06', '07', '08'];
+
+var adressInput = document.getElementById('address');
+
+
+/////////////////////////querySelector/////////////////////////// 
 var fade = document.querySelector('.map');
 var form = document.querySelector('.ad-form');
 var fieldSet = document.querySelectorAll('.ad-form__element');
-var adressInput = document.getElementById('address');
-var cardTemplate = document.querySelector('#card').content.querySelector('article');
-var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-var fragmentCard = document.createDocumentFragment();
-var pinFragment = document.createDocumentFragment();
 var mainPin = document.querySelector('.map__pin');
 var mapPin = document.querySelector('.map__pins');
-var mapArray = [];
+var cardTemplate = document.querySelector('#card .map__card');
+var mapPinTemplate = document.querySelector('#pin .map__pin');
 
+
+var mapArray = [];
 for (var i = 0; i < fieldSet.length; i++) {
   fieldSet[i].setAttribute('disabled', 'disabled');
 }
 
-getUnlockOfMapByMouseUp();
+/////////////////////////область вызова инструкций/////////////////////////// 
+mainPin.addEventListener('mouseup', unlockPin);
 
-getCoodinatesOfMainPin();
+mainPin.addEventListener('mouseup', getCoordinatesOfMainPin);
 
-generateDataObjectsInMapArray();
+generateDataArray();
 
+renderPin(pin);
+
+var pinFragment = document.createDocumentFragment();
+getAppendChildOfRenderPin();
+
+refreshCard(pin);
+
+var fragmentCard = document.createDocumentFragment();
+fragmentCard.appendChild(refreshCard());
+
+
+////////////////////////область объявления функций/////////////////////////
 function renderPin(pin) {
   var pinElement = mapPinTemplate.cloneNode(true);
   pinElement.dataset.pinId = i;
@@ -46,8 +62,6 @@ function renderPin(pin) {
   });
   return pinElement;
 }
-
-getAppendChildOfRenderPin();
 
 function refreshCard(pin) {
   var cardElement = cardTemplate;
@@ -84,8 +98,6 @@ function refreshCard(pin) {
   return cardElement;
 }
 
-fragmentCard.appendChild(refreshCard());
-
 function getRandomMinMaxNumber(min, max) {
   var randomMinMaxNum = Math.floor(Math.random() * (max - min) + min);
   return randomMinMaxNum;
@@ -100,58 +112,58 @@ function getShuffleArray(array) {
 }
 
 // Массив строк произвольной длинны
-function getRandomArrayLength(array) {
-  var featuresGeneric = getShuffleArray(array);
+function getRandomLengthArray(array) {
+  var generatedArrayOfFeatures = getShuffleArray(array);
   var randomFinishIndex = getRandomMinMaxNumber(1, array.length);
-  featuresGeneric = array.slice(1, randomFinishIndex);
-  return featuresGeneric;
+  generatedArrayOfFeatures = array.slice(1, randomFinishIndex);
+  return generatedArrayOfFeatures;
 }
 
 // Возвращает произвольную строку из массива
-function getRandomArray(array) {
+function getRandomArrayElement(array) {
   var randomArray = Math.floor(Math.random() * array.length);
   return array[randomArray];
 }
 
-function generateDataObjectsInMapArray() {
+function generateDataArray() {
   for (i = 0; i <= AVATAR_NUM.length - 1; i++) {
     var pinObj = {
-      location: getRandomLocationCoordinatesString(),
+      location: getRandomLocationCoordinates(),
       source: getAvatarUrlAdress(),
       titleArray: TITLE[i],
       address: getLocationCoordinateX() + ', ' + getLocationCoordinateY(),
       price: getRandomMinMaxNumber(1000, 1000000),
-      appartment: appartmentCheck(getRandomArray(TYPE)),
+      appartment: getAppartmentType(getRandomArrayElement(TYPE)),
       roomGuest: getRoomGuestDataString(),
       check: getCheckinCheckoutDataString(),
       photosSrc: getShuffleArray(PHOTOS),
-      features: getRandomArrayLength(FEATURES),
+      features: getRandomLengthArray(FEATURES),
     };
     mapArray.push(pinObj);
   }
   return mapArray;
 }
 
-function appartmentCheck(appartmentType) {
-  switch (appartmentType) {
+function getAppartmentType(type) {
+  var appartmentType = type;
+  switch (type) {
     case ('flat'):
-      var rusAppart = 'Квартира';
+      appartmentType = 'Квартира';
       break;
     case ('bungalo'):
-      rusAppart = 'Бунгало';
+      appartmentType = 'Бунгало';
       break;
     case ('house'):
-      rusAppart = 'Дом';
+      appartmentType = 'Дом';
       break;
     default:
-      rusAppart = 'Дворец';
-      break;
+      appartmentType = 'Дворец';
   }
-  return rusAppart;
+  return appartmentType;
 }
 
 function getCheckinCheckoutDataString() {
-  var checkinCheckout = 'заезд после ' + getRandomArray(CHECKIN) + ', выезд до ' + getRandomArray(CHECKOUT);
+  var checkinCheckout = 'заезд после ' + getRandomArrayElement(CHECKIN) + ', выезд до ' + getRandomArrayElement(CHECKOUT);
   return checkinCheckout;
 }
 
@@ -160,7 +172,7 @@ function getRoomGuestDataString() {
   return roomsGuests;
 }
 
-function getRandomLocationCoordinatesString() {
+function getRandomLocationCoordinates() {
   var randomLocation = 'left: ' + getLocationCoordinateX() + 'px' + '; top: ' + getLocationCoordinateY() + 'px';
   return randomLocation;
 }
@@ -180,23 +192,12 @@ function getLocationCoordinateY() {
   return randomY;
 }
 
-function getUnlockOfMapByMouseUp() {
-  mainPin.addEventListener('mouseup', function() {
-    for (i = 0; i < fieldSet.length; i++) {
-      fade.classList.remove('map--faded');
-      form.classList.remove('ad-form--disabled');
-      fieldSet[i].removeAttribute('disabled', 'disabled');
-    }
-  });
-}
-
-function getCoodinatesOfMainPin() {
-  mainPin.addEventListener('mouseup', function() {
-    var pageCoordinade = mainPin.getBoundingClientRect();
-    var newCoordinate = (pageCoordinade.x - BIG_PIN_HALF) + ', ' + (pageCoordinade.y - BIG_PIN_HALF);
-    adressInput.setAttribute('placeholder', newCoordinate);
-    generatePinsAndCardTemplate();
-  });
+function unlockPin() {
+  for (i = 0; i < fieldSet.length; i++) {
+    fade.classList.remove('map--faded');
+    form.classList.remove('ad-form--disabled');
+    fieldSet[i].removeAttribute('disabled', 'disabled');
+  }
 }
 
 function getAppendChildOfRenderPin() {
@@ -205,8 +206,19 @@ function getAppendChildOfRenderPin() {
   }
 }
 
-function generatePinsAndCardTemplate() {
-  mapPin.appendChild(pinFragment);
+function getCoordinatesOfMainPin() {
+  var pageCoordinade = mainPin.getBoundingClientRect();
+  var newCoordinate = (pageCoordinade.x - BIG_PIN_HALF) + ', ' + (pageCoordinade.y - BIG_PIN_HALF);
+  adressInput.setAttribute('placeholder', newCoordinate);
+  generatePinsFromTemplate();
+  generateCardsFromTemplate();
+}
+
+function generateCardsFromTemplate() {
   var beforeTag = document.querySelector('.map__filters-container');
   beforeTag.parentNode.insertBefore(fragmentCard, beforeTag);
+}
+
+function generatePinsFromTemplate() {
+  mapPin.appendChild(pinFragment);
 }
