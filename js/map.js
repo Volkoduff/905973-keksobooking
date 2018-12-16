@@ -13,10 +13,16 @@ var CHECKOUT = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 var AVATAR_NUM = ['01', '02', '03', '04', '05', '06', '07', '08'];
+var APPARTMENT_TYPES = {
+  bungalo: 'bungalo',
+  house: 'house',
+  palace: 'palace',
+  flat: 'flat'
+};
 
 var adressInput = document.getElementById('address');
-var qtyOfRooms = document.getElementById('room_number');
-var qtyOfGuests = document.getElementById('capacity');
+var roomsQuantity = document.getElementById('room_number');
+var roomsCapacity = document.getElementById('capacity');
 var formApartmentPrice = document.getElementById('price');
 var formApartmentType = document.getElementById('type');
 var timeInField = document.getElementById('timein');
@@ -35,13 +41,18 @@ var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map_
 /* /////////////////////////область вызова инструкций///////////////////////// */
 var mapArray = [];
 
-qtyOfRooms.addEventListener('change', function () {
-  setLimitationsToFormCapacityOfRoom();
+roomsQuantity.addEventListener('change', function () {
+  setFormRoomCapacityLimitation();
 });
 
 formApartmentType.addEventListener('change', function () {
   setLimitationsToMinimalPriceByAppartmentType();
 });
+
+checkinCheckoutForm.onchange = function (event) {
+  timeInField.value = event.target.value;
+  timeOutField.value = event.target.value;
+};
 
 for (var i = 0; i < fieldSet.length; i++) {
   fieldSet[i].setAttribute('disabled', 'disabled');
@@ -68,7 +79,7 @@ function unlockPin() {
     fade.classList.remove('map--faded');
     form.classList.remove('ad-form--disabled');
     fieldSet[i].removeAttribute('disabled', 'disabled');
-    mainPin.removeEventListener('mouseup', function () {
+    mainPin.removeEventListener('mouseup', function() {
       unlockPin();
     });
   }
@@ -86,10 +97,10 @@ function renderPin(pin) {
   pinElement.style = pin.location;
   pinElement.querySelector('img').src = pin.source;
   pinElement.querySelector('img').alt = pin.titleArray;
-  pinElement.addEventListener('click', function () {
+  pinElement.addEventListener('click', function() {
     deleteCardIfItIsCreated();
   });
-  pinElement.addEventListener('click', function (evt) {
+  pinElement.addEventListener('click', function(evt) {
     createPopupCard(evt, mapArray);
   });
   return pinElement;
@@ -128,32 +139,35 @@ function refreshCard(pin) {
     newElement.classList.add('popup__feature--' + pin.features[j]);
     listElement.appendChild(newElement);
   }
+
   var oldPhotoElement = cardElement.querySelector('.popup__photos');
   oldPhotoElement.innerHTML = '';
 
   for (var k = 0; k < pin.photosSrc.length; k++) {
-    createPhotoElement();
+    createPhotoElement(cardElement, k, pin, oldPhotoElement);
   }
 
-  function createPhotoElement() {
-    var newPhotoElement = cardElement.querySelector('.popup__photo');
-    newPhotoElement = document.createElement('img');
-    newPhotoElement.src = pin.photosSrc[k];
-    newPhotoElement.alt = 'Фотография жилья';
-    newPhotoElement.style.width = '45px';
-    newPhotoElement.style.height = '40px';
-    newPhotoElement.classList.add('popup__photo');
-    oldPhotoElement.appendChild(newPhotoElement);
-  }
   addCardHandlers(cardElement);
   return cardElement;
 }
 
+
+function createPhotoElement(cardElement, k, pin, oldPhotoElement) {
+  var newPhotoElement = cardElement.querySelector('.popup__photo');
+  newPhotoElement = document.createElement('img');
+  newPhotoElement.src = pin.photosSrc[k];
+  newPhotoElement.alt = 'Фотография жилья';
+  newPhotoElement.style.width = '45px';
+  newPhotoElement.style.height = '40px';
+  newPhotoElement.classList.add('popup__photo');
+  oldPhotoElement.appendChild(newPhotoElement);
+}
+
 function addCardHandlers(cardElement) {
-  cardElement.querySelector('.popup__close').addEventListener('click', function () {
+  cardElement.querySelector('.popup__close').addEventListener('click', function() {
     cardElement.classList.add('hidden');
   });
-  document.addEventListener('keydown', function (evt) {
+  document.addEventListener('keydown', function(evt) {
     if (evt.keyCode === ESC_KEYCODE) {
       cardElement.classList.add('hidden');
     }
@@ -209,13 +223,13 @@ function generateDataArray() {
 function getAppartmentType(type) {
   var appartmentType = type;
   switch (type) {
-    case ('flat'):
+    case (APPARTMENT_TYPES.flat):
       appartmentType = 'Квартира';
       break;
-    case ('bungalo'):
+    case (APPARTMENT_TYPES.bungalo):
       appartmentType = 'Бунгало';
       break;
-    case ('house'):
+    case (APPARTMENT_TYPES.house):
       appartmentType = 'Дом';
       break;
     default:
@@ -265,42 +279,36 @@ function generatePinsFromTemplate() {
 }
 
 // Синхронизация формы: кол-во комнат / кол-ву гостей
-function setLimitationsToFormCapacityOfRoom() {
-  var currentVal = qtyOfRooms.value;
+function setFormRoomCapacityLimitation() {
+  var currentVal = roomsQuantity.value;
   if (currentVal === 1) {
-    for (i = 0; i < qtyOfGuests.children.length; i++) {
-      qtyOfGuests.children[i].disabled = true;
+    for (i = 0; i < roomsCapacity.children.length; i++) {
+      roomsCapacity.children[i].disabled = true;
     }
   } else {
-    for (i = 0; i < qtyOfGuests.children.length; i++) {
+    for (i = 0; i < roomsCapacity.children.length; i++) {
       if (i < currentVal) {
-        qtyOfGuests.children[i].disabled = false;
+        roomsCapacity.children[i].disabled = false;
       } else {
-        qtyOfGuests.children[i].disabled = true;
+        roomsCapacity.children[i].disabled = true;
       }
     }
-    qtyOfGuests.children[0].selected = true;
+    roomsCapacity.children[0].selected = true;
   }
 }
 
-// Синхронизация формы: время заезда / время выезда
-checkinCheckoutForm.onchange = function (event) {
-  timeInField.value = event.target.value;
-  timeOutField.value = event.target.value;
-};
-
 function setLimitationsToMinimalPriceByAppartmentType() {
   var currentVal = formApartmentType.value;
-  if (currentVal === 'bungalo') {
+  if (currentVal === APPARTMENT_TYPES.bungalo) {
     formApartmentPrice.min = 0;
     formApartmentPrice.placeholder = 0;
-  } else if (currentVal === 'flat') {
+  } else if (currentVal === APPARTMENT_TYPES.flat) {
     formApartmentPrice.min = 1000;
     formApartmentPrice.placeholder = 1000;
-  } else if (currentVal === 'house') {
+  } else if (currentVal === APPARTMENT_TYPES.house) {
     formApartmentPrice.min = 5000;
     formApartmentPrice.placeholder = 5000;
-  } else if (currentVal === 'palace') {
+  } else if (currentVal === APPARTMENT_TYPES.palace) {
     formApartmentPrice.min = 10000;
     formApartmentPrice.placeholder = 10000;
   }
