@@ -49,6 +49,8 @@ formApartmentType.addEventListener('change', function () {
   setLimitationsToMinimalPriceByAppartmentType();
 });
 
+mainPin.addEventListener('mousedown', dragAndDropOfMainPin);
+
 checkinCheckoutForm.onchange = function (event) {
   timeInField.value = event.target.value;
   timeOutField.value = event.target.value;
@@ -58,11 +60,7 @@ for (var i = 0; i < fieldSet.length; i++) {
   fieldSet[i].setAttribute('disabled', 'disabled');
 }
 
-mainPin.addEventListener('mouseup', function () {
-  unlockPin();
-});
-
-mainPin.addEventListener('mouseup', function () {
+mainPin.addEventListener('mousedown', function () {
   setCoordinatesOfMainPin();
   generatePinsFromTemplate();
 });
@@ -83,12 +81,6 @@ function unlockPin() {
       unlockPin();
     });
   }
-}
-
-function setCoordinatesOfMainPin() {
-  var pageCoordinade = mainPin.getBoundingClientRect();
-  var newCoordinate = (pageCoordinade.x - BIG_PIN_HALF) + ', ' + (pageCoordinade.y - BIG_PIN_HALF);
-  adressInput.setAttribute('placeholder', newCoordinate);
 }
 
 function renderPin(pin) {
@@ -143,8 +135,8 @@ function refreshCard(pin) {
   var oldPhotoElement = cardElement.querySelector('.popup__photos');
   oldPhotoElement.innerHTML = '';
 
-  for (var k = 0; k < pin.photosSrc.length; k++) {
-    createPhotoElement(cardElement, k, pin, oldPhotoElement);
+  for (var photoIndex = 0; photoIndex < pin.photosSrc.length; photoIndex++) {
+    createPhotoElement(cardElement, photoIndex, pin, oldPhotoElement);
   }
 
   addCardHandlers(cardElement);
@@ -152,10 +144,10 @@ function refreshCard(pin) {
 }
 
 
-function createPhotoElement(cardElement, k, pin, oldPhotoElement) {
+function createPhotoElement(cardElement, photoIndex, pin, oldPhotoElement) {
   var newPhotoElement = cardElement.querySelector('.popup__photo');
   newPhotoElement = document.createElement('img');
-  newPhotoElement.src = pin.photosSrc[k];
+  newPhotoElement.src = pin.photosSrc[photoIndex];
   newPhotoElement.alt = 'Фотография жилья';
   newPhotoElement.style.width = '45px';
   newPhotoElement.style.height = '40px';
@@ -312,4 +304,56 @@ function setLimitationsToMinimalPriceByAppartmentType() {
     formApartmentPrice.min = 10000;
     formApartmentPrice.placeholder = 10000;
   }
+}
+
+function setCoordinatesOfMainPin() {
+  var pinCoordinateY = mainPin.offsetTop;
+  var pinCoordinateX = mainPin.offsetLeft;
+  var newCoordinate = (pinCoordinateY - BIG_PIN_HALF) + ', ' + pinCoordinateX;
+  adressInput.setAttribute('placeholder', newCoordinate);
+}
+
+function dragAndDropOfMainPin(evt) {
+  unlockPin();
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+  var onMouseMove = function (moveEvt) {
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+    mainPin.style.top = dragAndDropLimitationsY(shift);
+    mainPin.style.left = dragAndDropLimitationsX(shift);
+  };
+
+  var onMouseUp = function () {
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+}
+
+function dragAndDropLimitationsY(shift) {
+  if ((mainPin.offsetTop - MAP_HEIGH_MIN) > 0) {
+    var coordinatesY = (mainPin.offsetTop - shift.y) + 'px';
+  } else {
+    coordinatesY = (mainPin.offsetTop - shift.y) + 'px';
+  }
+  return coordinatesY;
+}
+
+function dragAndDropLimitationsX(shift) {
+  if (mainPin.offsetLeft > 0) {
+    var coordinatesX = (mainPin.offsetLeft - shift.x) + 'px';
+  } else {
+    coordinatesX = (mainPin.offsetLeft - shift.x) + 'px';
+  }
+  return coordinatesX;
 }
