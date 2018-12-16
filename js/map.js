@@ -79,7 +79,7 @@ function unlockPin() {
     fade.classList.remove('map--faded');
     form.classList.remove('ad-form--disabled');
     fieldSet[i].removeAttribute('disabled', 'disabled');
-    mainPin.removeEventListener('mouseup', function() {
+    mainPin.removeEventListener('mouseup', function () {
       unlockPin();
     });
   }
@@ -97,10 +97,10 @@ function renderPin(pin) {
   pinElement.style = pin.location;
   pinElement.querySelector('img').src = pin.source;
   pinElement.querySelector('img').alt = pin.titleArray;
-  pinElement.addEventListener('click', function() {
+  pinElement.addEventListener('click', function () {
     deleteCardIfItIsCreated();
   });
-  pinElement.addEventListener('click', function(evt) {
+  pinElement.addEventListener('click', function (evt) {
     createPopupCard(evt, mapArray);
   });
   return pinElement;
@@ -164,10 +164,10 @@ function createPhotoElement(cardElement, k, pin, oldPhotoElement) {
 }
 
 function addCardHandlers(cardElement) {
-  cardElement.querySelector('.popup__close').addEventListener('click', function() {
+  cardElement.querySelector('.popup__close').addEventListener('click', function () {
     cardElement.classList.add('hidden');
   });
-  document.addEventListener('keydown', function(evt) {
+  document.addEventListener('keydown', function (evt) {
     if (evt.keyCode === ESC_KEYCODE) {
       cardElement.classList.add('hidden');
     }
