@@ -2,7 +2,6 @@
 var TITLE = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var TYPE = ['palace', 'flat', 'house', 'bungalo'];
 var ESC_KEYCODE = 27;
-// var ENTER_KEYCODE = 27;
 var BIG_PIN = 200;
 var BIG_PIN_HALF = BIG_PIN / 2;
 var PIN_WIDTH = 65;
@@ -16,6 +15,13 @@ var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.g
 var AVATAR_NUM = ['01', '02', '03', '04', '05', '06', '07', '08'];
 
 var adressInput = document.getElementById('address');
+var qtyOfRooms = document.getElementById('room_number');
+var qtyOfGuests = document.getElementById('capacity');
+var formApartmentPrice = document.getElementById('price');
+var formApartmentType = document.getElementById('type');
+var timeInField = document.getElementById('timein');
+var timeOutField = document.getElementById('timeout');
+var checkinCheckoutForm = document.getElementById('timein');
 
 /* /////////////////////////querySelector///////////////////////// */
 var fade = document.querySelector('.map');
@@ -26,10 +32,16 @@ var mapPin = document.querySelector('.map__pins');
 var cardTemplate = document.querySelector('#card').content.querySelector('article');
 var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
-
 /* /////////////////////////область вызова инструкций///////////////////////// */
 var mapArray = [];
-// var data = generateDataArray(mapArray);
+
+qtyOfRooms.addEventListener('change', function () {
+  setLimitationsToFormCapacityOfRoom();
+});
+
+formApartmentType.addEventListener('change', function () {
+  setLimitationsToMinimalPriceByAppartmentType();
+});
 
 for (var i = 0; i < fieldSet.length; i++) {
   fieldSet[i].setAttribute('disabled', 'disabled');
@@ -74,7 +86,9 @@ function renderPin(pin) {
   pinElement.style = pin.location;
   pinElement.querySelector('img').src = pin.source;
   pinElement.querySelector('img').alt = pin.titleArray;
-  pinElement.addEventListener('click', deleteCardIfItIsCreated);
+  pinElement.addEventListener('click', function () {
+    deleteCardIfItIsCreated();
+  });
   pinElement.addEventListener('click', function (evt) {
     createPopupCard(evt, mapArray);
   });
@@ -248,4 +262,46 @@ function appendChildOfRenderPin() {
 
 function generatePinsFromTemplate() {
   mapPin.appendChild(pinFragment);
+}
+
+// Синхронизация формы: кол-во комнат / кол-ву гостей
+function setLimitationsToFormCapacityOfRoom() {
+  var currentVal = qtyOfRooms.value;
+  if (currentVal === 1) {
+    for (i = 0; i < qtyOfGuests.children.length; i++) {
+      qtyOfGuests.children[i].disabled = true;
+    }
+  } else {
+    for (i = 0; i < qtyOfGuests.children.length; i++) {
+      if (i < currentVal) {
+        qtyOfGuests.children[i].disabled = false;
+      } else {
+        qtyOfGuests.children[i].disabled = true;
+      }
+    }
+    qtyOfGuests.children[0].selected = true;
+  }
+}
+
+// Синхронизация формы: время заезда / время выезда
+checkinCheckoutForm.onchange = function (event) {
+  timeInField.value = event.target.value;
+  timeOutField.value = event.target.value;
+};
+
+function setLimitationsToMinimalPriceByAppartmentType() {
+  var currentVal = formApartmentType.value;
+  if (currentVal === 'bungalo') {
+    formApartmentPrice.min = 0;
+    formApartmentPrice.placeholder = 0;
+  } else if (currentVal === 'flat') {
+    formApartmentPrice.min = 1000;
+    formApartmentPrice.placeholder = 1000;
+  } else if (currentVal === 'house') {
+    formApartmentPrice.min = 5000;
+    formApartmentPrice.placeholder = 5000;
+  } else if (currentVal === 'palace') {
+    formApartmentPrice.min = 10000;
+    formApartmentPrice.placeholder = 10000;
+  }
 }
