@@ -20,7 +20,6 @@ var APPARTMENT_TYPES = {
   flat: 'flat'
 };
 
-var adressInput = document.getElementById('address');
 var roomsQuantity = document.getElementById('room_number');
 var roomsCapacity = document.getElementById('capacity');
 var formApartmentPrice = document.getElementById('price');
@@ -49,8 +48,6 @@ formApartmentType.addEventListener('change', function () {
   setLimitationsToMinimalPriceByAppartmentType();
 });
 
-mainPin.addEventListener('mousedown', dragAndDropOfMainPin);
-
 checkinCheckoutForm.onchange = function (event) {
   timeInField.value = event.target.value;
   timeOutField.value = event.target.value;
@@ -61,7 +58,6 @@ for (var i = 0; i < fieldSet.length; i++) {
 }
 
 mainPin.addEventListener('mousedown', function () {
-  setCoordinatesOfMainPin();
   generatePinsFromTemplate();
 });
 
@@ -306,54 +302,50 @@ function setLimitationsToMinimalPriceByAppartmentType() {
   }
 }
 
-function setCoordinatesOfMainPin() {
-  var pinCoordinateY = mainPin.offsetTop;
-  var pinCoordinateX = mainPin.offsetLeft;
-  var newCoordinate = (pinCoordinateY - BIG_PIN_HALF) + ', ' + pinCoordinateX;
-  adressInput.setAttribute('placeholder', newCoordinate);
-}
+var isDrag = false;
 
-function dragAndDropOfMainPin(evt) {
+var rectObject = fade.getBoundingClientRect();
+
+var limits = {
+  top: rectObject.top + MAP_HEIGH_MIN,
+  right: rectObject.right,
+  bottom: rectObject.bottom - BIG_PIN_HALF,
+  left: rectObject.left
+};
+
+mainPin.onmousedown = function () {
+  isDrag = true;
+};
+document.onmouseup = function () {
+  isDrag = false;
+};
+document.onmousemove = function (evt) {
+  if (isDrag) {
+    move(evt);
+  }
+};
+
+function move(evt) {
   unlockPin();
-  var startCoords = {
-    x: evt.clientX,
-    y: evt.clientY
-  };
-  var onMouseMove = function (moveEvt) {
-    var shift = {
-      x: startCoords.x - moveEvt.clientX,
-      y: startCoords.y - moveEvt.clientY
-    };
-    startCoords = {
-      x: moveEvt.clientX,
-      y: moveEvt.clientY
-    };
-    mainPin.style.top = dragAndDropLimitationsY(shift);
-    mainPin.style.left = dragAndDropLimitationsX(shift);
+  var newLocation = {
+    x: limits.left,
+    y: limits.top
   };
 
-  var onMouseUp = function () {
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('mouseup', onMouseUp);
-  };
-  document.addEventListener('mousemove', onMouseMove);
-  document.addEventListener('mouseup', onMouseUp);
+  if (evt.pageX > limits.right) {
+    newLocation.x = limits.right;
+  } else if (evt.pageX > limits.left) {
+    newLocation.x = evt.pageX;
+  }
+  if (evt.pageY > limits.bottom) {
+    newLocation.y = limits.bottom;
+  } else if (evt.pageY > limits.top) {
+    newLocation.y = evt.pageY;
+  }
+  relocate(newLocation);
 }
 
-function dragAndDropLimitationsY(shift) {
-  if ((mainPin.offsetTop - MAP_HEIGH_MIN) > 0) {
-    var coordinatesY = (mainPin.offsetTop - shift.y) + 'px';
-  } else {
-    coordinatesY = (mainPin.offsetTop - shift.y) + 'px';
-  }
-  return coordinatesY;
-}
-
-function dragAndDropLimitationsX(shift) {
-  if (mainPin.offsetLeft > 0) {
-    var coordinatesX = (mainPin.offsetLeft - shift.x) + 'px';
-  } else {
-    coordinatesX = (mainPin.offsetLeft - shift.x) + 'px';
-  }
-  return coordinatesX;
+function relocate(newLocation) {
+  mainPin.style.left = newLocation.x + 'px';
+  mainPin.style.top = newLocation.y + 'px';
 }
