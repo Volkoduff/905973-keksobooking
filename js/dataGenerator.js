@@ -1,5 +1,6 @@
 'use strict';
 (function () {
+
   function generateDataArray() {
     for (i = 0; i <= window.constants.AVATAR_NUM.length - 1; i++) {
       var pinObj = {
@@ -14,9 +15,9 @@
         photosSrc: window.utilities.getShuffleArray(window.constants.PHOTOS),
         features: window.utilities.getRandomLengthArray(window.constants.FEATURES),
       };
-      mapArray.push(pinObj);
+      pinsData.push(pinObj);
     }
-    return mapArray;
+    return pinsData;
   }
 
   function getAppartmentType(type) {
@@ -53,7 +54,7 @@
     return randomLocation;
   }
 
-  function getAvatarUrlAdress(i) {
+  function getAvatarUrlAdress() {
     var avatar = 'img/avatars/user' + window.constants.AVATAR_NUM[i] + '.png';
     return avatar;
   }
@@ -67,7 +68,7 @@
     var randomY = window.utilities.getRandomMinMaxNumber(window.constants.MAP_HEIGH_MIN, window.constants.MAP_HEIGH_MAX);
     return randomY;
   }
-  window.calculations = {
+  window.dataGenerator = {
     generateDataArray: generateDataArray,
   };
 })();

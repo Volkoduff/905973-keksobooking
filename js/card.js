@@ -62,13 +62,14 @@
     });
   }
 
-  function createPopupCard(evt, mapArray) {
+  function createPopupCard(evt, pinData) {
     var beforeTag = document.querySelector('.map__filters-container');
     var fragmentCard = document.createDocumentFragment();
-    fragmentCard.appendChild(refreshCard(mapArray[evt.currentTarget.dataset.pinId]));
+    fragmentCard.appendChild(refreshCard(pinData));
     beforeTag.parentNode.insertBefore(fragmentCard, beforeTag);
   }
-  window.cardGeneration = {
+
+  window.card = {
     deleteCardIfItIsCreated: deleteCardIfItIsCreated,
     createPopupCard: createPopupCard,
     refreshCard: refreshCard,
