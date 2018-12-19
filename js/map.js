@@ -1,33 +1,45 @@
 'use strict';
 
 var adressInput = document.getElementById('address');
-// var timeInField = document.getElementById('timein');
-// var timeOutField = document.getElementById('timeout');
+var timeInField = document.getElementById('timein');
+var timeOutField = document.getElementById('timeout');
 
 /* /////////////////////////querySelector///////////////////////// */
-
+var fade = document.querySelector('.map');
+var form = document.querySelector('.ad-form');
+var fieldSet = document.querySelectorAll('.ad-form__element');
+var mainPin = document.querySelector('.map__pin');
 var mapPin = document.querySelector('.map__pins');
+var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
 
 /* /////////////////////////область вызова инструкций///////////////////////// */
 var pinsData = [];
 
-window.pin.mainPin.addEventListener('mouseup', function () {
-  window.pin.unlockPin();
+mainPin.addEventListener('mouseup', function () {
+  unlockPin();
 });
 
 window.forms.formInit();
 
-window.pin.mainPin.addEventListener('mousedown', dragAndDropOfMainPin);
+mainPin.addEventListener('mousedown', dragAndDropOfMainPin);
 
-window.pin.setDisableToForms();
+timeInField.onchange = function (event) {
+  timeInField.value = event.target.value;
+  timeOutField.value = event.target.value;
+};
 
-window.pin.mainPin.addEventListener('mousedown', function () {
+for (var i = 0; i < fieldSet.length; i++) {
+  fieldSet[i].setAttribute('disabled', 'disabled');
+}
+
+mainPin.addEventListener('mousedown', function () {
   setCoordinatesOfMainPin();
   generatePinsFromTemplate();
 });
 
 // присвоили массив функции
+
 
 // renderPins(pinsData);
 // var pinFragment = document.createDocumentFragment();
@@ -43,9 +55,36 @@ renderPins();
 
 /* /////////////////////////область объявления функций///////////////////////// */
 
+function unlockPin() {
+  for (i = 0; i < fieldSet.length; i++) {
+    fade.classList.remove('map--faded');
+    form.classList.remove('ad-form--disabled');
+    fieldSet[i].removeAttribute('disabled', 'disabled');
+    mainPin.removeEventListener('mouseup', function () {
+      unlockPin();
+    });
+  }
+}
+
+function renderPin(pin) {
+  var pinElement = mapPinTemplate.cloneNode(true);
+  pinElement.dataset.pinId = i;
+  pinElement.style = pin.location;
+  pinElement.querySelector('img').src = pin.source;
+  pinElement.querySelector('img').alt = pin.titleArray;
+  pinElement.addEventListener('click', function () {
+    window.card.deleteCardIfItIsCreated();
+  });
+  pinElement.addEventListener('click', function (evt) {
+    window.card.createPopupCard(evt, pin);
+  });
+  return pinElement;
+}
+
+
 function renderPins() {
-  for (var i = 0; i < pinsData.length; i++) {
-    pinFragment.appendChild(window.pin.renderPin(pinsData[i]));
+  for (i = 0; i < pinsData.length; i++) {
+    pinFragment.appendChild(renderPin(pinsData[i]));
   }
   return pinFragment;
 }
@@ -54,14 +93,14 @@ function generatePinsFromTemplate() {
 }
 
 function setCoordinatesOfMainPin() {
-  var pinCoordinateY = window.pin.mainPin.offsetTop;
-  var pinCoordinateX = window.pin.mainPin.offsetLeft;
+  var pinCoordinateY = mainPin.offsetTop;
+  var pinCoordinateX = mainPin.offsetLeft;
   var newCoordinate = (pinCoordinateY - window.constants.BIG_PIN_HALF) + ', ' + pinCoordinateX;
   adressInput.setAttribute('placeholder', newCoordinate);
 }
 
 function dragAndDropOfMainPin(evt) {
-  window.pin.unlockPin();
+  unlockPin();
   var startCoords = {
     x: evt.clientX,
     y: evt.clientY
@@ -75,8 +114,8 @@ function dragAndDropOfMainPin(evt) {
       x: moveEvt.clientX,
       y: moveEvt.clientY
     };
-    window.pin.mainPin.style.top = (window.pin.mainPin.offsetTop - shift.y) + 'px';
-    window.pin.mainPin.style.left = dragAndDropLimitationsX(shift);
+    mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
+    mainPin.style.left = dragAndDropLimitationsX(shift);
   };
 
   var onMouseUp = function () {
@@ -87,10 +126,10 @@ function dragAndDropOfMainPin(evt) {
   document.addEventListener('mouseup', onMouseUp);
 
   function dragAndDropLimitationsX(shift) {
-    if (window.pin.mainPin.offsetLeft > 0) {
-      var coordinatesX = (window.pin.mainPin.offsetLeft - shift.x) + 'px';
+    if (mainPin.offsetLeft > 0) {
+      var coordinatesX = (mainPin.offsetLeft - shift.x) + 'px';
     } else {
-      coordinatesX = (window.pin.mainPin.offsetLeft + shift.x + 15) + 'px';
+      coordinatesX = (mainPin.offsetLeft + shift.x + 15) + 'px';
     }
     return coordinatesX;
   }
