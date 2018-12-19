@@ -72,7 +72,6 @@
   window.card = {
     deleteCardIfItIsCreated: deleteCardIfItIsCreated,
     createPopupCard: createPopupCard,
-    refreshCard: refreshCard,
   };
 
 })();
