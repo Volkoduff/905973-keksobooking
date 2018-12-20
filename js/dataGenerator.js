@@ -16,7 +16,7 @@
         photosSrc: window.utilities.getShuffleArray(window.constants.PHOTOS),
         features: window.utilities.getRandomLengthArray(window.constants.FEATURES),
       };
-        data.push(pinData);
+      data.push(pinData);
     }
     return data;
   }
@@ -70,6 +70,6 @@
     return randomY;
   }
   window.dataGenerator = {
-      generatePinsData: generatePinsData,
+    generatePinsData: generatePinsData,
   };
 })();
