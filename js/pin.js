@@ -1,5 +1,5 @@
 'use strict';
-(function () {
+(function() {
   var mainPin = document.querySelector('.map__pin');
   var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
   var fade = document.querySelector('.map');
@@ -21,10 +21,10 @@
     pinElement.style = pin.location;
     pinElement.querySelector('img').src = pin.source;
     pinElement.querySelector('img').alt = pin.titleArray;
-    pinElement.addEventListener('click', function () {
+    pinElement.addEventListener('click', function() {
       window.card.deleteCardIfItIsCreated();
     });
-    pinElement.addEventListener('click', function (evt) {
+    pinElement.addEventListener('click', function(evt) {
       window.card.createPopupCard(evt, pin);
     });
     return pinElement;
@@ -90,11 +90,11 @@
     unlockPin();
     generatePinsFromTemplate();
 
-    mainPin.removeEventListener('mousedown', initOnMouseDown);
+    mainPin.removeEventListener('mousedown',initOnMouseDown);
   }
 
   function init() {
-    mainPin.addEventListener('mousedown', initOnMouseDown);
+    mainPin.addEventListener('mousedown',initOnMouseDown);
     mainPin.addEventListener('mousedown', function (evt) {
       dragAndDropOfMainPin(evt);
       setCoordinatesOfMainPin();
