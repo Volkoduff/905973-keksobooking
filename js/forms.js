@@ -26,16 +26,16 @@
 
   function setLimitationsToMinimalPriceByAppartmentType() {
     var currentVal = formApartmentType.value;
-    if (currentVal === window.data.APPARTMENT_TYPES.bungalo) {
+    if (currentVal === window.constants.APPARTMENT_TYPES.bungalo) {
       formApartmentPrice.min = 0;
       formApartmentPrice.placeholder = 0;
-    } else if (currentVal === window.data.APPARTMENT_TYPES.flat) {
+    } else if (currentVal === window.constants.APPARTMENT_TYPES.flat) {
       formApartmentPrice.min = 1000;
       formApartmentPrice.placeholder = 1000;
-    } else if (currentVal === window.data.APPARTMENT_TYPES.house) {
+    } else if (currentVal === window.constants.APPARTMENT_TYPES.house) {
       formApartmentPrice.min = 5000;
       formApartmentPrice.placeholder = 5000;
-    } else if (currentVal === window.data.APPARTMENT_TYPES.palace) {
+    } else if (currentVal === window.constants.APPARTMENT_TYPES.palace) {
       formApartmentPrice.min = 10000;
       formApartmentPrice.placeholder = 10000;
     }

@@ -8,7 +8,7 @@
     return generatedArrayOfFeatures;
   }
 
-  // Возвращает произвольную строку из массива
+  // Возвращает произвольный элемент из массива
   function getRandomArrayElement(array) {
     var randomArray = Math.floor(Math.random() * array.length);
     return array[randomArray];
