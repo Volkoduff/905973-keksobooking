@@ -19,6 +19,7 @@
       data.push(pinData);
     }
     return data;
+
   }
 
   function getAppartmentType(type) {
