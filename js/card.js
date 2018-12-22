@@ -9,6 +9,7 @@
     }
   }
 
+
   function refreshCard(pin) {
     var cardElement = cardTemplate.cloneNode(true);
     cardElement.querySelector('.popup__title').textContent = pin.titleArray;

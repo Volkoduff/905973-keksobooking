@@ -4,6 +4,7 @@
   var formApartmentType = document.getElementById('type');
   var roomsCapacity = document.getElementById('capacity');
   var formApartmentPrice = document.getElementById('price');
+  var form = document.querySelector('.ad-form');
 
   // Синхронизация формы: кол-во комнат / кол-ву гостей
   function setFormRoomCapacityLimitation() {
@@ -42,13 +43,18 @@
   }
 
   function formInit() {
-    roomsQuantity.addEventListener('change', function () {
+    roomsQuantity.addEventListener('change', function() {
       setFormRoomCapacityLimitation();
     });
-    formApartmentType.addEventListener('change', function () {
+    formApartmentType.addEventListener('change', function() {
       setLimitationsToMinimalPriceByAppartmentType();
     });
+    form.addEventListener('submit', function(evt) {
+      window.backend.uploadData(new FormData(form));
+      evt.preventDefault();
+    });
   }
+
   window.forms = {
     formInit: formInit,
   };

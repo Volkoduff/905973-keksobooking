@@ -1,26 +1,33 @@
 'use strict';
 (function () {
-
-  function generatePinsData() {
-    var data = [];
-    for (var i = 0; i <= window.constants.AVATAR_NUM.length - 1; i++) {
+  var generatePinsData = function (dataServer) {
+    var serverArray = dataServer;
+    var dataLocal = [];
+    for (var serverArrayIndex = 0; serverArrayIndex <= serverArray.length; serverArrayIndex++) {
       var pinData = {
-        location: getRandomLocationCoordinates(),
-        source: getAvatarUrlAdress(),
-        titleArray: window.constants.TITLE[i],
-        address: getLocationCoordinateX() + ', ' + getLocationCoordinateY(),
-        price: window.utilities.getRandomMinMaxNumber(1000, 1000000),
-        appartment: getAppartmentType(window.utilities.getRandomArrayElement(window.constants.TYPE)),
-        roomGuest: getRoomGuestDataString(),
-        check: getCheckinCheckoutDataString(),
-        photosSrc: window.utilities.getShuffleArray(window.constants.PHOTOS),
-        features: window.utilities.getRandomLengthArray(window.constants.FEATURES),
+        location: getLocation(),
+        // source: getAvatarUrlAdress(),
+        // titleArray: window.constants.TITLE[i],
+        address: '',
+        // price: window.utilities.getRandomMinMaxNumber(1000, 1000000),
+        // appartment: getAppartmentType(window.utilities.getRandomArrayElement(window.constants.TYPE)),
+        // roomGuest: getRoomGuestDataString(),
+        // check: getCheckinCheckoutDataString(),
+        // photosSrc: window.utilities.getShuffleArray(window.constants.PHOTOS),
+        // features: window.utilities.getRandomLengthArray(window.constants.FEATURES),
       };
-      data.push(pinData);
+      dataLocal.push(pinData);
     }
-    return data;
+    function getLocation() {
+      var randomX = serverArray[serverArrayIndex].location.x;
+      var randomY = serverArray[serverArrayIndex].location.y;
+      var randomLocation = 'left: ' + randomX + 'px' + '; top: ' + randomY + 'px';
+      return randomLocation;
+    }
+    return dataLocal;
+  };
 
-  }
+  window.backend.downloadData(URL, generatePinsData);
 
   function getAppartmentType(type) {
     var appartmentType = type;
@@ -51,25 +58,11 @@
     return roomsGuests;
   }
 
-  function getRandomLocationCoordinates() {
-    var randomLocation = 'left: ' + getLocationCoordinateX() + 'px' + '; top: ' + getLocationCoordinateY() + 'px';
-    return randomLocation;
-  }
-
   function getAvatarUrlAdress() {
     var avatar = 'img/avatars/user' + window.utilities.getRandomArrayElement(window.constants.AVATAR_NUM) + '.png';
     return avatar;
   }
 
-  function getLocationCoordinateX() {
-    var randomX = window.utilities.getRandomMinMaxNumber(window.constants.PIN_WIDTH, window.constants.MAP_WIDTH - window.constants.PIN_WIDTH);
-    return randomX;
-  }
-
-  function getLocationCoordinateY() {
-    var randomY = window.utilities.getRandomMinMaxNumber(window.constants.MAP_HEIGH_MIN, window.constants.MAP_HEIGH_MAX);
-    return randomY;
-  }
   window.dataGenerator = {
     generatePinsData: generatePinsData,
   };

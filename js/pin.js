@@ -80,6 +80,13 @@
     }
   }
 
+  // var onSuccess = function (dataServer) {
+  //   console.log(dataServer);
+  // };
+
+  // window.backend(onSuccess);
+
+
   function generatePinsFromTemplate() {
     var pinsData = window.dataGenerator.generatePinsData();
     var pinsFragment = renderPins(pinsData);
