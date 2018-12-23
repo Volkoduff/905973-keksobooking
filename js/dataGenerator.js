@@ -3,35 +3,37 @@
   var generatePinsData = function (dataServer) {
     var serverArray = dataServer;
     var dataLocal = [];
-    for (var serverArrayIndex = 0; serverArrayIndex <= serverArray.length; serverArrayIndex++) {
+    for (var serverArrayIndex = 0; serverArrayIndex <= serverArray.length - 1; serverArrayIndex++) {
       var pinData = {
-        location: getLocation(),
-        // source: getAvatarUrlAdress(),
-        // titleArray: window.constants.TITLE[i],
-        address: '',
-        // price: window.utilities.getRandomMinMaxNumber(1000, 1000000),
-        // appartment: getAppartmentType(window.utilities.getRandomArrayElement(window.constants.TYPE)),
-        // roomGuest: getRoomGuestDataString(),
-        // check: getCheckinCheckoutDataString(),
-        // photosSrc: window.utilities.getShuffleArray(window.constants.PHOTOS),
-        // features: window.utilities.getRandomLengthArray(window.constants.FEATURES),
+        location: getLocation(serverArray, serverArrayIndex),
+        source: serverArray[serverArrayIndex].author.avatar,
+        titleArray: serverArray[serverArrayIndex].offer.title,
+        address: serverArray[serverArrayIndex].offer.address,
+        description: serverArray[serverArrayIndex].offer.description,
+        price: serverArray[serverArrayIndex].offer.price,
+        appartment: getAppartmentType(serverArray, serverArrayIndex),
+        roomGuest: serverArray[serverArrayIndex].offer.rooms,
+        check: getCheckinCheckoutDataString(serverArray, serverArrayIndex),
+        photosSrc: serverArray[serverArrayIndex].offer.photos,
+        features: serverArray[serverArrayIndex].offer.features,
       };
       dataLocal.push(pinData);
-    }
-    function getLocation() {
-      var randomX = serverArray[serverArrayIndex].location.x;
-      var randomY = serverArray[serverArrayIndex].location.y;
-      var randomLocation = 'left: ' + randomX + 'px' + '; top: ' + randomY + 'px';
-      return randomLocation;
     }
     return dataLocal;
   };
 
   window.backend.downloadData(URL, generatePinsData);
 
-  function getAppartmentType(type) {
-    var appartmentType = type;
-    switch (type) {
+  function getLocation(serverArray, serverArrayIndex) {
+    var randomX = serverArray[serverArrayIndex].location.x;
+    var randomY = serverArray[serverArrayIndex].location.y;
+    var randomLocation = 'left: ' + randomX + 'px' + '; top: ' + randomY + 'px';
+    return randomLocation;
+  }
+
+  function getAppartmentType(serverArray, serverArrayIndex) {
+    var appartmentType = serverArray[serverArrayIndex].offer.type;
+    switch (appartmentType) {
       case (window.constants.APPARTMENT_TYPES.flat):
         appartmentType = 'Квартира';
         break;
@@ -47,20 +49,9 @@
     return appartmentType;
   }
 
-
-  function getCheckinCheckoutDataString() {
-    var checkinCheckout = 'заезд после ' + window.utilities.getRandomArrayElement(window.constants.CHECKIN) + ', выезд до ' + window.utilities.getRandomArrayElement(window.constants.CHECKOUT);
+  function getCheckinCheckoutDataString(serverArray, serverArrayIndex) {
+    var checkinCheckout = 'заезд после ' + serverArray[serverArrayIndex].offer.checkin + ', выезд до ' + serverArray[serverArrayIndex].offer.checkout;
     return checkinCheckout;
-  }
-
-  function getRoomGuestDataString() {
-    var roomsGuests = window.utilities.getRandomMinMaxNumber(1, 5) + ' комнат(ы) для ' + window.utilities.getRandomMinMaxNumber(2, 10) + ' гостей';
-    return roomsGuests;
-  }
-
-  function getAvatarUrlAdress() {
-    var avatar = 'img/avatars/user' + window.utilities.getRandomArrayElement(window.constants.AVATAR_NUM) + '.png';
-    return avatar;
   }
 
   window.dataGenerator = {
